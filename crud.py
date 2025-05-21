@@ -76,32 +76,35 @@ def cadastrar (agd):
     # Ficar solicitando a digitação de um nome de um contato a ser cadastrado na agenda, até que um nome NÃO CADASTRADO seja digitado.
     nome_achado = False
     while not nome_achado:
-        digita_nome = input("Insira um nome: ")
-        if padrao_de_nome.match(digita_nome) :
-            validacao = ondeEsta(digita_nome,agd) #verificando se o nome existe na lista
-            if validacao[0] == False: #nome não existe
-                nome_achado = True
-            else:
-                print("Nome já existe! Favor digitar outro.")
+        digita_nome = input("Insira um nome ou 'Cancela' para sair do cadastro: ")
+        if digita_nome.upper() == 'CANCELA':
+            print()
+            print("Cadastro não realizado")
+            nome_achado = True
         else: 
-            print("Nome inválido! Favor digitar novamente...")
+            if padrao_de_nome.match(digita_nome) :
+                validacao = ondeEsta(digita_nome,agd) #verificando se o nome existe na lista
+                if validacao[0] == False: #nome não existe
+                    # Solicitar então a digitação do aniversario, do endereço, do telefone (fixo), do celular e do e_mail da pessoa, cujo nome foi digitado. Gerar então uma lista conforme abaixo:
+                    aniversario = input("Insira a data de aniversário: ")
+                    end = input("Insira o endereço: ")
+                    fone = input("Insira o número de telefone fixo: ")
+                    cel = input("Insira o número de celular: ")
+                    email = input("Insira o email: ")
+                    
+                    contato=[digita_nome,aniversario,end,fone,cel,email] #na listona, 0 é contato
+                    
+                    agenda.insert(validacao[1], contato) #adicionando a listinha contato na listona agenda 
+                    
+                    print()
+                    print("Cadastro realizado com sucesso!")
+                    nome_achado = True
+                else:
+                    print("Nome já existe! Favor digitar outro.")
+            else: 
+                print("Nome inválido! Favor digitar novamente...")
 
- # Solicitar então a digitação do aniversario, do endereço, do telefone (fixo), do celular e do e_mail da pessoa, cujo nome foi digitado. Gerar então uma lista conforme abaixo:
-    aniversario = input("Insira a data de aniversário: ")
-    end = input("Insira o endereço: ")
-    fone = input("Insira o número de telefone fixo: ")
-    cel = input("Insira o número de celular: ")
-    email = input("Insira o email: ")
-    
-    contato=[digita_nome,aniversario,end,fone,cel,email] #na listona, 0 é contato
-    
-    agenda.append(contato) #adicionando a listinha contato na listona agenda         
-                
-        
-
-    
-   
-    
+      
                       
     # lembrando que agd é parâmetro formal desta função; o parâmetro real que é fornecido no programa ao chamar esta função se chama agenda.
     # Na listona, as listinhas deverão estar em ordem alfabética de nome e o local apropriadoa para a inserção deverá ser obtido usando a função ondeEsta, que realiza uma busca binária.
@@ -122,22 +125,22 @@ def procurar (agd):
         if digita_nome.upper() == 'CANCELA':
             print()
             print("Procura cancelada")
-            break
+            nome_achado = True
         else:
             if padrao_de_nome.match(digita_nome) :
                 validacao = ondeEsta(digita_nome, agd) #verificando se o nome existe na lista
                 if validacao[0] == False: #nome não existe, então pede o nome novamente
                     print("Nome não existe! Favor digitar outro.")
                 else:
-                    nome_achado = True # achou o nome, mostra os dados da listinha 
-                    
-                    print()
+                    print() # achou o nome, mostra os dados da listinha
                     print('Nome: ',agd[validacao[1]][0])
                     print('Aniversario: ',agd[validacao[1]][1])
                     print('Endereco: ',agd[validacao[1]][2])
                     print('Telefone: ',agd[validacao[1]][3])
                     print('Celular: ',agd[validacao[1]][4])
                     print('E-mail: ',agd[validacao[1]][5])
+                    
+                    nome_achado = True 
             else: 
                 print("Nome inválido! Favor digitar novamente...")
     
