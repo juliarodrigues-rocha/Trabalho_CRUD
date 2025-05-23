@@ -2,6 +2,8 @@ import re
 padrao_de_telefone = re.compile('^(?:\\([0-9]{2}\\) )?9?[0-9]{4}-[0-9]{4}$')
 padrao_de_celular = re.compile('^(?:\\([0-9]{2}\\) )?9?[0-9]{5}-[0-9]{4}$')
 padrao_de_nome = re.compile('^[A-Z][a-z]*(?: (?:[A-Z]|[a-z])[a-z]*)*$')
+padrao_de_data = re.compile(r'^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$')
+
 
 def apresenteSe ():
     print('+-------------------------------------------------------------------------------+')
@@ -65,8 +67,71 @@ def ondeEsta (nome,agd): #nome fica na posição zero
     # a função deverá retornar a lista [True,meio] quando encontrar nome procurado ou então a lista [False,inicio], quando não encontrar o nome procurado.
     # busca binária
 
-
-
+def validaNome (nome):
+    listaPossiveis = ['de', 'da', 'do', 'dos', 'das'] # possíveis nomes que não precisam do maiusculo no começo
+    listaNome = nome.split() # lista de cada palavra do nome
+    
+    for i in range(len(listaNome)): 
+        if listaNome[i].lower() in listaPossiveis:
+            if i == 0 or i == len(listaNome) - 1: # não entendi direito
+                return False
+            else:
+                continue
+        else:
+            if not padrao_de_nome.match(listaNome[i]):
+                return False
+    
+def validaData (dia, mes, ano):
+    if dia < 0 or dia > 31:
+        print("Valor inválido para dia!")  # Só é possível validar o intervalo do dia
+        return False
+    else:
+        if mes < 0 or mes > 12:
+            print("Valor inválido para mês!")  # Mês deve estar entre 1 e 12
+            return False
+        else:
+            # Verifica se o mês tem apenas 30 dias
+            if dia > 30 and (mes == 4 or mes == 6 or mes == 9 or mes == 11):
+                print("Valor de dia e de mês incompatíveis um com o outro!")
+                return False
+            # Verifica o mês de fevereiro
+            elif dia > 29 and mes == 2:
+                print("Valor de dia e de mês incompatíveis um com o outro!")
+                return False
+            # Verifica anos antigos
+            elif ano < -45:
+                print("Este programa não valida datas com anos anteriores a 46 a.C., antes do calendário juliano!")
+                return False
+            elif ano == 0:
+                print("Não existiu ano 0!")
+                return False
+            # Verifica a transição do calendário juliano para gregoriano
+            elif dia >= 5 and dia <= 14 and mes == 10 and ano == 1582:
+                print("Este dia não existiu neste mês e ano!")
+                return False
+            else:
+                if ano < 1582:
+                    # Ano juliano
+                    if ano % 4 == 0:
+                        print("Data válida!")  # Ano bissexto juliano
+                        return True
+                    else:
+                        if dia > 28 and mes == 2:
+                            print("Valor de dia, mês e ano incompatíveis um com o outro!")
+                            return False
+                        else:
+                            return True  # Ano comum juliano
+                else:
+                    # Ano gregoriano
+                    if ano % 400 == 0 or (ano % 4 == 0 and ano % 100 != 0):
+                        print("Data válida!")
+                        return True# Ano bissexto gregoriano
+                    else:
+                        if dia > 28 and mes == 2:
+                            print("Valor de dia, mês e ano incompatíveis um com o outro!")
+                            return False
+                        else:
+                            return True  # Ano comum gregoriano
 
 def cadastrar (agd):
     # Ficar solicitando a digitação de um nome de um contato a ser cadastrado na agenda, até que um nome NÃO CADASTRADO seja digitado.
@@ -80,15 +145,29 @@ def cadastrar (agd):
         if not padrao_de_nome.match(nome):
             print("Nome inválido! Deve começar com letra maiúscula e conter apenas letras e espaços.")
             continue
-            
+        
+        validacaoNome = validaNome(nome)
+        if validacaoNome == False:
+            print("Nome inválido!")
+            continue
+        
         validacao = ondeEsta(nome, agd)
         
         if validacao[0]:
             print("Nome já existe! Favor digitar outro...")
             continue
-            
+        
         # Restante do cadastro...
-        aniversario = input("Insira a data de aniversário (DD/MM): ")
+        while True:
+            aniversario = input("Insira a data de aniversário (DD/MM/AAAA): ")
+            if padrao_de_data.match(aniversario):
+                diaMesAno = aniversario.split('/')
+                validacaoData = validaData(int(diaMesAno[0]), int(diaMesAno[1]), int(diaMesAno[2]))
+                if validacaoData == True:
+                    break
+            else:
+                print("Data inválida! Formato esperado: DD/MM/AAAA")
+        
         end = input("Insira o endereço: ")
         
         while True:
