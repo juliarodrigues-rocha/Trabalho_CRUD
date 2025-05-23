@@ -228,7 +228,7 @@ def atualizar (agd):
 
 def listar (agd):
     #Vamos usar um for para percorrer cada item da lista agd.
-    #Cada contato é uma outra lista com os seguintes campos: nome, aniversario ...
+    #Cada contato é uma outra lista com os seguintes campos: nome, aniversario ... 
     print()
 
     if len(agd) == 0: #Então essa lista está vazia
